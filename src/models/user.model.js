@@ -1,5 +1,5 @@
 import mongoose, { Schema, Types } from "mongoose";
-import { JsonWebTokenError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt"
 
 const userSchema = new Schema(
@@ -16,7 +16,7 @@ const userSchema = new Schema(
             type: String,
             required: true,
             unique: true,
-            lowecase: true,
+            lowercase: true,
             trim: true, 
         },
         fullName: {
@@ -54,19 +54,19 @@ const userSchema = new Schema(
 
 // password is encrypted by bcrypt module just before save (pre)
 userSchema.pre("save", async function (next) {
-    if(!this.isModified("password")) return next()
+    if (!this.isModified("password")) return next()
 
-    this.password = bcrypt.hash(this.password, 10)
+    this.password = await bcrypt.hash(this.password, 10)
     next()
 })
 
 // inbuilt password checker using bcrypt, return bool value
-userSchema.method.isPasswordCorrect = async function (password) {
+userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
 
-userSchema.method.generateAccessToken = function () {
-    jwt.sign(
+userSchema.methods.generateAccessToken = function () {
+    return jwt.sign(
         {
             _id: this._id,
             email: this.email,
@@ -75,18 +75,19 @@ userSchema.method.generateAccessToken = function () {
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
-            expireIn: process.env.ACCESS_TOKEN_EXPIRY
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
     )
 }
-userSchema.method.generateRefreshToken = function () {
-    jwt.sign(
+
+userSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(
         {
             _id: this._id
         },
         process.env.REFRESH_TOKEN_SECRET,
         {
-            expireIn: process.env.REFRESH_TOKEN_EXPIRY
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
         }
     )
 }
