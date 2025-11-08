@@ -3,7 +3,9 @@ import connectDB from "./db/index.js";
 import { app } from "./app.js"
 
 // Load environment variables from the project root .env file
-dotenv.config()
+dotenv.config({
+    path: './.env'
+})
  
 connectDB()
 .then(()=> {
