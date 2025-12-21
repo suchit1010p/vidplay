@@ -10,6 +10,10 @@ app.use(cors({
     credentials: true
 }))
 
+
+// cors : a mechanism that allows web application to access resources from different domains. 
+
+
 // limiting the request so that surver can hold the load 
 app.use(express.json({limit:"16kb"}))
 // exncode url data and put it in object form  
