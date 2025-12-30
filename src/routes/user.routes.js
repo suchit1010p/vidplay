@@ -2,7 +2,7 @@ import { Router } from "express";
 import { changeCurrentPassword, getCurrentUser, getUserChannelProfile, getWatchHistory, loginUser, logoutUser, refreshAccessToken, registerUser, updateAccountDetails, updateUserAvatar, updateUserCoverImage } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { publishAVideo } from "../controllers/video.controller.js";
+import { deleteVideo, getVideoById, publishAVideo, updateVideo } from "../controllers/video.controller.js";
 
 const router = Router()
 
@@ -24,23 +24,6 @@ router.route("/register").post(
 router.route("/login").post(loginUser)
 
 
-//upload video 
-
-router.route("/publishVideo").post(
-    verifyJWT,
-    upload.fields([
-        {
-            name: "video",
-            maxCount: 1
-        },
-        {   
-            name: "thumbnail",
-            maxCount: 1
-        }
-    ]),
-    publishAVideo)
-
-// 
 // secured routes
 
 router.route("/logout").post(verifyJWT,logoutUser)
